@@ -1,3 +1,75 @@
 from django.db import models
+from pymysql import NULL
 
 # Create your models here.
+class Customer(models.Model):
+    CustomerId = models.CharField(max_length=30, primary_key=True)
+    EnterpriseName = models.CharField(max_length=50)
+    CustomerName = models.CharField(max_length=50)
+    EmailId = models.EmailField(max_length=30)
+    MobileNumber = models.CharField(max_length=10)
+    Status = models.CharField(max_length=20)
+    ProfileComplete = models.CharField(max_length=5)
+    KYCStatus = models.CharField(max_length=20)
+    CustomerGroup = models.CharField(max_length=30)
+    CurrentRoyaltyPoints = models.IntegerField()
+    TotalRoyaltyPoints = models.IntegerField() 
+    LastRedemption = models.FloatField()
+    TotalRedemption = models.FloatField()
+    BonusUponTotal = models.CharField(max_length=30)
+    BirthDate = models.DateField()
+    Gender = models.CharField(max_length=20)
+    Address = models.CharField(max_length=50)
+    PostalCode = models.CharField(max_length=6)
+    Country = models.CharField(max_length=20)
+    State = models.CharField(max_length=30)
+    City = models.CharField(max_length=20)
+    TimeZone = models.CharField(max_length=30)
+    RegisteredDate = models.DateField(auto_now_add=True)
+    UpdatedDate = models.DateField(auto_now=True)
+    VerifiedCustomer = models.CharField(max_length=20)
+
+class Bank(models.Model):
+    CustomerId = models.ForeignKey(Customer, on_delete=models.CASCADE, default=NULL)
+    CustomerName = models.CharField(max_length=50)
+    BankName = models.CharField(max_length=30)
+    AccountNumber = models.CharField(max_length=18, primary_key=True)
+    AccountHolderName = models.CharField(max_length=30)
+    IFSCCode = models.CharField(max_length=11)
+    AccountType = models.CharField(max_length=15)
+    BankType = models.CharField(max_length=15)
+    DateCreated = models.DateTimeField(auto_now_add=True)
+    DateModified = models.DateTimeField(auto_now=True)
+
+
+class Transaction(models.Model):
+    CustomerId = models.ForeignKey(Customer, on_delete=models.CASCADE, default=NULL)
+    AccountNumber = models.ForeignKey(Bank, on_delete=models.CASCADE, default=NULL)
+    LoyaltyTransaction = models.CharField(max_length=30, primary_key=True)
+    TransactionType = models.CharField(max_length=20)
+    LoyaltyPoints = models.IntegerField()
+    TransactionStatus = models.CharField(max_length=10)
+    TransactionDetails = models.CharField(max_length=100)
+    Country = models.CharField(max_length=20)
+    State = models.CharField(max_length=30)
+    City = models.CharField(max_length=20)
+    TransactionTime = models.DateTimeField(auto_now_add=True)    
+
+class Digisol(models.Model):
+    RedemptionID = models.CharField(max_length=30, primary_key=True) #Generate using Hash Functions
+    CustomerId = models.ForeignKey(Customer, on_delete=models.CASCADE, default=NULL)
+    PartnerName = models.CharField(max_length=50)
+    CompanyName = models.CharField(max_length=50)
+    PANNumber = models.CharField(max_length=10)
+    GSTNumber = models.CharField(max_length=15)
+    City = models.CharField(max_length=20)
+    State = models.CharField(max_length=30)
+    VoucherQuality = models.IntegerField()
+    LoyaltyPoints = models.CharField(max_length=20) #loyalty points in Transaction class is int, but output with .00 in summary 
+    ConversionRate = models.CharField(max_length=10)
+    RedemptionValue = models.FloatField()
+    BankName = models.CharField(max_length=30)
+    AccountNumber = models.ForeignKey(Bank, on_delete=models.CASCADE, default=NULL)
+    AccountType = models.CharField(max_length=20)
+    IFSCCode = models.CharField(max_length=11)
+    RedemptionTarget = models.FloatField()

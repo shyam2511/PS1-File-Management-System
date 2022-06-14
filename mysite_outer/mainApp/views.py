@@ -11,14 +11,14 @@ def index(request):
 
 
 def dashboard(request):
-    username = request.GET['username']
 
-    return render(request, 'dashboard.html', {'name': username})
+
+    return render(request, 'dashboard.html')
 
 
 def upload(request):
     if request.method == 'POST':
-        data = request.FILES['myfile']
+        data = request.FILES['myfile1']
         df = pd.read_csv(data)
         cdres = conversiontosql(df)
     return render(request, 'output.html', {'result': cdres})

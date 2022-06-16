@@ -1,9 +1,10 @@
 from django.db import models
 
+
 # Create your models here.
 
 class Customer(models.Model):
-    CustomerId = models.CharField(max_length=30, primary_key=True) #changed floatfield to charfield
+    CustomerId = models.CharField(max_length=30, primary_key=True)  # changed floatfield to charfield
     EnterpriseName = models.CharField(max_length=50, null=True, blank=True)
     CustomerName = models.CharField(max_length=50)
     EmailId = models.EmailField(max_length=30, null=True, blank=True)
@@ -12,8 +13,8 @@ class Customer(models.Model):
     ProfileComplete = models.CharField(max_length=5, null=True, blank=True)
     KYCStatus = models.CharField(max_length=20, null=True, blank=True)
     CustomerGroup = models.CharField(max_length=30, null=True, blank=True)
-    CurrentLoyaltyPoints = models.FloatField() #changed integer to float
-    TotalLoyaltyPoints = models.FloatField() #changed integer to float
+    CurrentLoyaltyPoints = models.FloatField()  # changed integer to float
+    TotalLoyaltyPoints = models.FloatField()  # changed integer to float
     LastRedemption = models.FloatField()
     TotalRedemption = models.FloatField()
     BonusUponTotal = models.CharField(max_length=30)
@@ -32,6 +33,7 @@ class Customer(models.Model):
     def str(self):
         return self.CustomerName
 
+
 class Bank(models.Model):
     CustomerName = models.CharField(max_length=50, null=True, blank=True)
     BankName = models.CharField(max_length=50, null=True, blank=True)
@@ -46,10 +48,11 @@ class Bank(models.Model):
     def str(self):
         return self.BankName
 
+
 class Transaction(models.Model):
     # CustomerId = models.ForeignKey(Customer, on_delete=models.CASCADE)
     LoyaltyTransactionId = models.CharField(max_length=30)
-    CustomerId = models.CharField(max_length=30) #changed float to char
+    CustomerId = models.CharField(max_length=30)  # changed float to char
     LoyaltyType = models.CharField(max_length=30, null=True, blank=True)
     TransactionType = models.CharField(max_length=20, null=True, blank=True)
     LoyaltyPoints = models.IntegerField()
@@ -62,6 +65,7 @@ class Transaction(models.Model):
 
     def str(self):
         return self.LoyaltyTransactionId
+
 
 class Summary(models.Model):
     Redemption_Transaction_ID = models.AutoField(primary_key=True)
@@ -78,7 +82,6 @@ class Summary(models.Model):
     RedemptionValue = models.FloatField(null=True, blank=True)
     BankName = models.CharField(max_length=30, null=True, blank=True)
     BankAccountNumber = models.FloatField(max_length=18)
-    BankAccountType = models.CharField(max_length=20, null=True, blank=True )
+    BankAccountType = models.CharField(max_length=20, null=True, blank=True)
     BankIFSCCode = models.CharField(max_length=11, null=True, blank=True)
     RedemptionTarget = models.FloatField(null=True, blank=True)
-

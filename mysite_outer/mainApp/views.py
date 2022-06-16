@@ -1,40 +1,34 @@
-from django.http import HttpResponse
-from django.shortcuts import render
-from .convertback import converttocsv
-import pandas as pd
+import datetime as datetime
 import mimetypes
 import os
-from email.errors import InvalidMultipartContentTransferEncodingDefect
-from django.shortcuts import redirect
-from django.http import HttpResponse, response
-from tablib import Dataset
+
 import pandas as pd
-import datetime as datetime
+from django.db import connection
+from django.http import HttpResponse
+from django.shortcuts import render
+
+from .convertback import converttocsv
 from .models import Bank
 from .models import Customer
 from .models import Transaction
-from django.db import connection
+
 
 def index(request):
     return render(request, 'login.html')
 
 
 def dashboard(request):
-
-
     return render(request, 'dashboard.html')
+
 
 def upload(request):
     if request.method == 'POST':
-        file1=request.FILES['myfile1']
-        file2=request.FILES['myfile2']
-        file3=request.FILES['myfile3']
-        allFiles=[]
-        allFiles.append(file1)
-        allFiles.append(file2)
-        allFiles.append(file3)
-        print(allFiles)
-        for file in allFiles:
+        file1 = request.FILES['myfile1']
+        file2 = request.FILES['myfile2']
+        file3 = request.FILES['myfile3']
+        all_files = [file1, file2, file3]
+        print(all_files)
+        for file in all_files:
             filename = file.name.split('.')[0].lower()
             print(filename)
             imported_data = pd.read_csv(file)
@@ -60,12 +54,12 @@ def upload(request):
 
             elif 'customer' in filename:
                 for row in data:
-                    print(str(row[0])+'hello')
+                    print(str(row[0]) + 'hello')
                     row[22] = datetime.datetime.strptime(row[22], "%d-%m-%Y %H:%M")
                     if len(row[14]) == 0:
                         row[14] = '2000-01-01'
                     row[23] = datetime.datetime.strptime(row[23], "%d-%m-%Y %H:%M")
-                    row[0]=str(row[0])
+                    row[0] = str(row[0])
                     print(type(row[0]))
                     print(len(row[0]))
                     value = Customer(
@@ -121,23 +115,30 @@ def upload(request):
 
     for t in trans:
         cursor.execute(
-            "Update mainApp_customer set mainApp_customer.CurrentLoyaltyPoints = (%s), mainApp_customer.TotalLoyaltyPoints=mainApp_customer.TotalLoyaltyPoints+%s, mainApp_customer.UpdatedDate=%s where mainApp_customer.CustomerId = (%s) && mainApp_customer.UpdatedDate< (%s)",
+            "Update mainApp_customer set mainApp_customer.CurrentLoyaltyPoints = (%s), "
+            "mainApp_customer.TotalLoyaltyPoints=mainApp_customer.TotalLoyaltyPoints+%s, "
+            "mainApp_customer.UpdatedDate=%s where mainApp_customer.CustomerId = (%s) && "
+            "mainApp_customer.UpdatedDate< (%s)",
             (t.LoyaltyPoints, t.LoyaltyPoints, t.TransactionTime, t.CustomerId, t.TransactionTime))
 
         cursor.execute("delete from mainApp_Summary;")
         cursor.execute(
-            "Insert into mainApp_Summary(Customer_Member_ID, CompanyName, City, State, LoyaltyPoints, BankName, BankAccountNumber, BankAccountType, BankIFSCCode) "
-            "SELECT mainApp_Customer.CustomerId, mainApp_Customer.EnterpriseName, mainApp_Customer.City, mainApp_Customer.State, mainApp_Customer.TotalLoyaltyPoints,mainApp_Bank.BankName, mainApp_Bank.AccountNumber, mainApp_Bank.AccountType, mainApp_Bank.IFSCCode FROM "
+            "Insert into mainApp_Summary(Customer_Member_ID, CompanyName, City, State, LoyaltyPoints, BankName, "
+            "BankAccountNumber, BankAccountType, BankIFSCCode) "
+            "SELECT mainApp_Customer.CustomerId, mainApp_Customer.EnterpriseName, mainApp_Customer.City, "
+            "mainApp_Customer.State, mainApp_Customer.TotalLoyaltyPoints,mainApp_Bank.BankName, "
+            "mainApp_Bank.AccountNumber, mainApp_Bank.AccountType, mainApp_Bank.IFSCCode FROM "
             "mainApp_Customer inner join mainApp_Bank on mainApp_Customer.CustomerName=mainApp_Bank.CustomerName")
 
     return render(request, 'output.html', {})
+
 
 # Define function to download pdf file using template
 def download(request):
     converttocsv()
     filename = 'output.csv'
     # Define Django project base directory
-    BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(_file_)))
+    BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     # Define the full file path
     filepath = BASE_DIR + '\\converted_files\\output.csv'
     # Open the file for reading content

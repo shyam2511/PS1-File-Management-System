@@ -9,10 +9,11 @@ def converttocsv():
     conn = mysql.connector.connect(host="localhost", user="root", passwd="root", database="project")
 
     sql_query = pd.read_sql_query(''' 
-                                  select * from products
+                                  select * from mainapp_summary
                                   '''
                                   ,
-                                  conn)  # here, the 'conn' is the variable that contains your database connection information from step 2
+                                  conn)  # here, the 'conn' is the variable that contains your database connection
+    # information from step 2
 
     filepath = os.path.join(settings.BASE_DIR, 'converted_files\output.csv')
     if os.path.exists(filepath):
